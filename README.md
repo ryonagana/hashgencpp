@@ -1,6 +1,9 @@
 # HASHGEN 
 A Simple tool to generate hashes. MD5, SHA1, SHA256
 
+- I decided to use C++ when i realized that pyinstaller generates a bloated 40mb binary for a small software.
+
+
 Tools Used: 
 - Qtcreator
 
