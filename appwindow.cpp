@@ -111,11 +111,11 @@ void AppWindow::actionGenerateHashes()
 
 
     hashList.push_back(new RunCommand("certUtil",
-                                  QStringList() << "-hashfile " << this->filepath << "SHA256",
+                                  QStringList() << "-hashfile" << this->filepath << "SHA256",
                                   HashType::SHA256));
 
     hashList.push_back(new RunCommand("certUtil",
-                                  QStringList() << "-hashfile " << this->filepath << "SHA512",
+                                  QStringList() << "-hashfile" << this->filepath << "SHA512",
                                   HashType::SHA512));
 
 
