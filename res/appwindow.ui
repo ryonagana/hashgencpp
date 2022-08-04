@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AppWindow</class>
+ <widget class="QMainWindow" name="AppWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>817</width>
+    <height>382</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Hash Generator (Hashgen 0.3 </string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>801</width>
+      <height>281</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Hashes</string>
+    </property>
+    <widget class="QLabel" name="labelSHA256">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>SHA256 Checkum</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelSHA512">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>SHA512 Checkum</string>
+     </property>
+    </widget>
+    <widget class="QPlainTextEdit" name="fieldSHA256">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>110</y>
+       <width>631</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="btClipboardSHA256">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>110</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelMD5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>50</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>MD5:</string>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="btClipboardSHA512">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>170</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+    <widget class="QPlainTextEdit" name="fieldSHA512">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>170</y>
+       <width>631</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPlainTextEdit" name="fieldMd5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>631</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="btClipboardMD5">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>40</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelStatus">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>220</y>
+       <width>771</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QToolButton" name="btGenerate">
+    <property name="geometry">
+     <rect>
+      <x>535</x>
+      <y>20</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="btClear">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>20</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelArquivo">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Arquivo:</string>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="fieldFile">
+    <property name="geometry">
+     <rect>
+      <x>75</x>
+      <y>20</y>
+      <width>456</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>817</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;Arquivo</string>
+    </property>
+    <addaction name="acSave"/>
+    <addaction name="acSaveAs"/>
+    <addaction name="separator"/>
+    <addaction name="acQuit"/>
+   </widget>
+   <widget class="QMenu" name="menu_Sobre">
+    <property name="title">
+     <string>&amp;Sobre</string>
+    </property>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Sobre"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="acSave">
+   <property name="text">
+    <string>Salvar</string>
+   </property>
+  </action>
+  <action name="acSaveAs">
+   <property name="text">
+    <string>Salvar Como..</string>
+   </property>
+  </action>
+  <action name="acQuit">
+   <property name="text">
+    <string>Sair</string>
+   </property>
+  </action>
+  <action name="acGenerateHash">
+   <property name="text">
+    <string>Generate hash</string>
+   </property>
+  </action>
+  <action name="acClear">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="acClipboard_MD5">
+   <property name="text">
+    <string>Clipboard MD5</string>
+   </property>
+  </action>
+  <action name="acClipboard_SHA256">
+   <property name="text">
+    <string>Copy Clipboard SHA256</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy Clipboard SHA256</string>
+   </property>
+  </action>
+  <action name="acClipboard_SHA512">
+   <property name="text">
+    <string>Copy Clipboard SHA512</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

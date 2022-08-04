@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>appwindow.ui</file>
+        <file>dark/window.qss</file>
+        <file>hashgencpp_pt_BR.ts</file>
+    </qresource>
+    <qresource prefix="/new/prefix1"/>
+</RCC>
