@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QThreadPool>
+#include <QObject>
 
 
 AppWindow::AppWindow(QWidget *parent)
@@ -84,6 +85,25 @@ bool AppWindow::fileNotLoaded()
    return true;
 }
 
+void AppWindow::populateWorkers(const QString &filepath)
+{
+    if(!isLoaded){
+
+        hashList.push_back(new ProcessWorker("certUtil",
+                                                                           QStringList() << "-hashfile" << filepath << "MD5",
+                                                                           HashType::MD5));
+
+        hashList.push_back(new ProcessWorker("certUtil",
+                                                                           QStringList() << "-hashfile" << filepath << "SHA256",
+                                                                           HashType::SHA256));
+
+
+        hashList.push_back(new ProcessWorker("certUtil",
+                                                                           QStringList() << "-hashfile" << filepath << "SHA512",
+                                                                           HashType::SHA512));
+    }
+}
+
 void AppWindow::actionGenerateHashes()
 {
     QFileDialog dialog;
@@ -99,38 +119,36 @@ void AppWindow::actionGenerateHashes()
     path = dialog.selectedFiles();
     this->filepath = path[0];
     this->ui->fieldFile->setPlainText(path.back());
-    this->isLoaded = true;
+
     this->ui->btClear->setDisabled(false);
 
 
+    this->populateWorkers(this->filepath);
 
-
-    hashList.push_back(new RunCommand("certUtil",
-                                  QStringList() << "-hashfile" << this->filepath << "MD5",
-                                  HashType::MD5));
-
-
-    hashList.push_back(new RunCommand("certUtil",
-                                  QStringList() << "-hashfile" << this->filepath << "SHA256",
-                                  HashType::SHA256));
-
-    hashList.push_back(new RunCommand("certUtil",
-                                  QStringList() << "-hashfile" << this->filepath << "SHA512",
-                                  HashType::SHA512));
 
 
 
 
   for(auto& cmd : hashList){
+
    cmd->setAutoDelete(true);
+
+   QObject::connect(&cmd->getSignals(), &ProcessSignals::progress, this, &AppWindow::isRunnableEnd);
+   QObject::connect(&cmd->getSignals(), &ProcessSignals::result, this, &AppWindow::fetchResult);
    QThreadPool::globalInstance()->start(cmd);
   }
+
+  this->isLoaded = true;
+
 
 }
 
 void AppWindow::actionClearAll()
 {
-    this->fileNotLoaded();
+    if(!this->fileNotLoaded()){
+        return;
+    }
+
 
     this->isLoaded = false;
     this->ui->fieldMd5->clear();
@@ -138,6 +156,12 @@ void AppWindow::actionClearAll()
     this->ui->fieldSHA512->clear();
     this->ui->fieldFile->clear();
     this->ui->btClear->setDisabled(true);
+
+    // all  pointers is automagically deleted after threadpool runs
+    // it changes  the pointer ownership to itself  whern it  finishes the runnable process
+    // frees automatic, no need to worries about memory leak here
+    this->hashList.clear();
+    return;
 }
 
 void AppWindow::actionCopyMD5()
@@ -168,5 +192,16 @@ void AppWindow::actionCopySHA512()
 void AppWindow::clearStatusText()
 {
     this->ui->labelStatus->clear();
+}
+
+void AppWindow::isRunnableEnd(int i)
+{
+    qDebug() << i << "\n";
+}
+
+void AppWindow::fetchResult(const int type, const QStringList list)
+{
+    (void) type;
+    qDebug() << "Resultado:" <<  list << '\n';
 }
 

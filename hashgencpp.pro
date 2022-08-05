@@ -14,11 +14,11 @@ TARGET = hashgen
 SOURCES += \
     main.cpp \
     appwindow.cpp \
-    runcommand.cpp
+    worker.cpp
 
 HEADERS += \
     appwindow.h \
-    runcommand.h
+    worker.h
 
 FORMS += \
     res/appwindow.ui

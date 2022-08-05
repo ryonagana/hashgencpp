@@ -2,7 +2,7 @@
 #define APPWINDOW_H
 
 #include <QMainWindow>
-#include "runcommand.h"
+#include "worker.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class AppWindow; }
@@ -22,6 +22,9 @@ public:
 
     bool fileNotLoaded();
 
+
+    void populateWorkers(const QString& filepath);
+
 public slots:
     void actionGenerateHashes();
     void actionClearAll();
@@ -31,11 +34,14 @@ public slots:
     void actionCopySHA512();
     void clearStatusText();
 
+
+    void isRunnableEnd(int i);
+    void fetchResult(const int type,  const QStringList list);
+
 private:
     Ui::AppWindow *ui;
     bool isLoaded;
     QString filepath;
-
-    QVector<RunCommand*> hashList;
+    QVector<ProcessWorker*> hashList;
 };
 #endif // APPWINDOW_H
