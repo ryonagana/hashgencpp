@@ -11,16 +11,18 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 
 TARGET = hashgen
 
+INCLUDEPATH += include/
+
 SOURCES += \
     main.cpp \
-    appwindow.cpp \
-    aboutdialog.cpp \
-    worker.cpp
+    src/appwindow.cpp \
+    src/aboutdialog.cpp \
+    src/worker.cpp
 
 HEADERS += \
-    appwindow.h \
-    aboutdialog.h \
-    worker.h
+    include/appwindow.h \
+    include/aboutdialog.h \
+    include/worker.h
 
 FORMS += \
     res/aboutdialog.ui \
