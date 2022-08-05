@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Hash Generator (Hashgen 0.3 </string>
+   <string>HashGen 0.3</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QGroupBox" name="groupBox">
@@ -130,7 +130,7 @@
       </rect>
      </property>
      <property name="readOnly">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QToolButton" name="btClipboardMD5">
@@ -186,7 +186,7 @@
      <string>...</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelArquivo">
+   <widget class="QLabel" name="labelFilepath">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -224,7 +224,7 @@
    </property>
    <widget class="QMenu" name="menu_File">
     <property name="title">
-     <string>&amp;Arquivo</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="acSave"/>
     <addaction name="acSaveAs"/>
@@ -233,8 +233,9 @@
    </widget>
    <widget class="QMenu" name="menu_Sobre">
     <property name="title">
-     <string>&amp;Sobre</string>
+     <string>&amp;Help</string>
     </property>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Sobre"/>
@@ -242,17 +243,17 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="acSave">
    <property name="text">
-    <string>Salvar</string>
+    <string>&amp;Save</string>
    </property>
   </action>
   <action name="acSaveAs">
    <property name="text">
-    <string>Salvar Como..</string>
+    <string>Save &amp;as...</string>
    </property>
   </action>
   <action name="acQuit">
    <property name="text">
-    <string>Sair</string>
+    <string>Exit</string>
    </property>
   </action>
   <action name="acGenerateHash">
@@ -281,6 +282,16 @@
   <action name="acClipboard_SHA512">
    <property name="text">
     <string>Copy Clipboard SHA512</string>
+   </property>
+  </action>
+  <action name="acRegenerate">
+   <property name="text">
+    <string>Regenerate Hashes</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

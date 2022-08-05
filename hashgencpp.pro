@@ -14,13 +14,16 @@ TARGET = hashgen
 SOURCES += \
     main.cpp \
     appwindow.cpp \
+    aboutdialog.cpp \
     worker.cpp
 
 HEADERS += \
     appwindow.h \
+    aboutdialog.h \
     worker.h
 
 FORMS += \
+    res/aboutdialog.ui \
     res/appwindow.ui
 
 TRANSLATIONS += \

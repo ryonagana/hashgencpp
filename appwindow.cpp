@@ -8,7 +8,7 @@
 #include <QMessageBox>
 #include <QThreadPool>
 #include <QObject>
-
+#include "aboutdialog.h"
 
 AppWindow::AppWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -69,16 +69,22 @@ void AppWindow::initComponents()
     QObject::connect(this->ui->acClipboard_MD5,&QAction::triggered, this, &AppWindow::actionCopyMD5);
     QObject::connect(this->ui->acClipboard_SHA256,&QAction::triggered, this, &AppWindow::actionCopySHA256);
     QObject::connect(this->ui->acClipboard_SHA512,&QAction::triggered, this, &AppWindow::actionCopySHA512);
+    QObject::connect(this->ui->acRegenerate, &QAction::triggered, this, &AppWindow::actionReloadhashes);
+
+    QObject::connect(this->ui->actionAbout, &QAction::triggered, this, &AppWindow::openAboutDialog);
 
     this->ui->btClipboardMD5->setDefaultAction(this->ui->acClipboard_MD5);
     this->ui->btClipboardSHA256->setDefaultAction(this->ui->acClipboard_SHA256);
     this->ui->btClipboardSHA512->setDefaultAction(this->ui->acClipboard_SHA512);
+
+
+    this->disableFields(true);
 }
 
 bool AppWindow::fileNotLoaded()
 {
    if(!this->isLoaded){
-       QMessageBox::critical(this, "Erro", "Nenhum Arquivo foi carregado, por favor carregue um arquivo antes de usar esta opção!", QMessageBox::StandardButton::Ok);
+       QMessageBox::critical(this, "Error", "Please load a file before copy", QMessageBox::StandardButton::Ok);
        return false;
    }
 
@@ -104,9 +110,23 @@ void AppWindow::populateWorkers(const QString &filepath)
     }
 }
 
+void AppWindow::runWorkers()
+{
+    for(auto& cmd : hashList){
+
+     cmd->setAutoDelete(true);
+
+     QObject::connect(&cmd->getSignals(), &ProcessSignals::progress, this, &AppWindow::isRunnableEnd);
+     QObject::connect(&cmd->getSignals(), &ProcessSignals::result, this, &AppWindow::fetchResult);
+     QThreadPool::globalInstance()->start(cmd);
+    }
+
+}
+
 void AppWindow::actionGenerateHashes()
 {
     QFileDialog dialog;
+    QFileInfo info;
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setViewMode(QFileDialog::ViewMode::List);
 
@@ -118,28 +138,27 @@ void AppWindow::actionGenerateHashes()
 
     path = dialog.selectedFiles();
     this->filepath = path[0];
-    this->ui->fieldFile->setPlainText(path.back());
+
+    info.setFile(this->filepath);
+#if Q_OS_LINUX
+    if(info.isSymLink()){
+        QMessageBox::critical(this, "Error", "Symlink is not Allowed!", QMessageBox::StandardButton::Ok);
+        this->actionClearAll();
+        return;
+    }
+#endif
+
+    this->ui->fieldFile->setPlainText(info.fileName());
 
     this->ui->btClear->setDisabled(false);
 
 
     this->populateWorkers(this->filepath);
 
-
-
-
-
-  for(auto& cmd : hashList){
-
-   cmd->setAutoDelete(true);
-
-   QObject::connect(&cmd->getSignals(), &ProcessSignals::progress, this, &AppWindow::isRunnableEnd);
-   QObject::connect(&cmd->getSignals(), &ProcessSignals::result, this, &AppWindow::fetchResult);
-   QThreadPool::globalInstance()->start(cmd);
-  }
-
-  this->isLoaded = true;
-
+    this->ui->btGenerate->setDefaultAction(this->ui->acRegenerate);
+    this->runWorkers();
+    this->isLoaded = true;
+    this->disableFields(false);
 
 }
 
@@ -156,11 +175,13 @@ void AppWindow::actionClearAll()
     this->ui->fieldSHA512->clear();
     this->ui->fieldFile->clear();
     this->ui->btClear->setDisabled(true);
+    this->ui->btGenerate->setDefaultAction(this->ui->acGenerateHash);
 
     // all  pointers is automagically deleted after threadpool runs
-    // it changes  the pointer ownership to itself  whern it  finishes the runnable process
-    // frees automatic, no need to worries about memory leak here
+    // it changes  the pointer ownership to itself  when it  finishes the runnable process
+    // frees automatically, no need to worries about memory leak here
     this->hashList.clear();
+    this->disableFields(true);
     return;
 }
 
@@ -170,7 +191,7 @@ void AppWindow::actionCopyMD5()
 
     QClipboard *c = QApplication::clipboard();
     c->setText(this->ui->fieldMd5->toPlainText());
-    this->ui->labelStatus->setText("Hash MD5 Copiado para o clipboard, Use CTRL+V para Colar!");
+    this->ui->labelStatus->setText("Hash MD5 copied to clipboard (use CTRL + V shortcut tp paste");
     QTimer::singleShot(5000, this, &AppWindow::clearStatusText);
 }
 
@@ -178,6 +199,7 @@ void AppWindow::actionCopySHA256()
 {
     if(!this->fileNotLoaded()) return;
     QClipboard *c = QApplication::clipboard();
+    this->ui->labelStatus->setText("Hash SHA256 copied to clipboard (use CTRL + V shortcut tp paste");
     c->setText(this->ui->fieldSHA256->toPlainText());
 }
 
@@ -186,12 +208,28 @@ void AppWindow::actionCopySHA512()
     if(!this->fileNotLoaded()) return;
 
     QClipboard *c = QApplication::clipboard();
+    this->ui->labelStatus->setText("Hash SHA512 copied to clipboard (use CTRL + V shortcut tp paste");
     c->setText(this->ui->fieldSHA512->toPlainText());
 }
 
 void AppWindow::clearStatusText()
 {
     this->ui->labelStatus->clear();
+}
+
+void AppWindow::actionReloadhashes()
+{
+    if(!this->isLoaded) return;
+
+    this->hashList.clear();
+    this->populateWorkers(this->filepath);
+    this->runWorkers();
+
+    this->ui->labelStatus->setText("Hashes Regenerated");
+    QTimer::singleShot(5000, this, &AppWindow::clearStatusText);
+
+    return;
+
 }
 
 void AppWindow::isRunnableEnd(int i)
@@ -202,6 +240,58 @@ void AppWindow::isRunnableEnd(int i)
 void AppWindow::fetchResult(const int type, const QStringList list)
 {
     (void) type;
-    qDebug() << "Resultado:" <<  list << '\n';
+
+    switch(type){
+        case 0: //md5
+        this->ui->fieldMd5->setPlainText(parseText(list));
+        break;
+
+        case 1: //sha256
+            this->ui->fieldSHA256->setPlainText(parseText(list));
+        break;
+
+        case 2: //sha512
+            this->ui->fieldSHA512->setPlainText(parseText(list));
+        break;
+    }
+
+    return;
+}
+
+void AppWindow::openAboutDialog()
+{
+    AboutDialog about;
+    about.exec();
+}
+
+QString AppWindow::parseText(const QStringList &list)
+{
+    QString res;
+
+#ifdef Q_OS_WINDOWS
+    res = list[1];
+    res.replace(" ","");
+    return res;
+#else
+    return QString::empty();
+#endif
+}
+
+void AppWindow::disableFields(bool _val)
+{
+    if(_val){
+        this->ui->fieldFile->setEnabled(!_val);
+        this->ui->fieldMd5->setEnabled(!_val);
+        this->ui->fieldSHA256->setEnabled(!_val);
+        this->ui->fieldSHA512->setEnabled(!_val);
+        return;
+    }
+
+
+    this->ui->fieldFile->setEnabled(_val);
+    this->ui->fieldMd5->setEnabled(_val);
+    this->ui->fieldSHA256->setEnabled(_val);
+    this->ui->fieldSHA512->setEnabled(_val);
+    return;
 }
 

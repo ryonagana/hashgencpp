@@ -33,6 +33,12 @@ QLabel#labelStatus {
     font-size:13px;
 }
 
+QLabel#labelFilepath {
+    color: #FFFFFF;
+    font-size:13px;
+}
+
+
 QGroupBox {
     color: #FFFFFF;
     border-top: 1px;
