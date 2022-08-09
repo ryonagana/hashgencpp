@@ -14,14 +14,16 @@ TARGET = hashgen
 INCLUDEPATH += include/
 
 SOURCES += \
-    main.cpp \
+    src/main.cpp \
     src/appwindow.cpp \
     src/aboutdialog.cpp \
+    src/progress_dialog.cpp \
     src/worker.cpp
 
 HEADERS += \
     include/appwindow.h \
     include/aboutdialog.h \
+    include/progress_dialog.h \
     include/worker.h
 
 FORMS += \

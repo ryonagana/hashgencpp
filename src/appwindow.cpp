@@ -8,7 +8,9 @@
 #include <QMessageBox>
 #include <QThreadPool>
 #include <QObject>
+
 #include "aboutdialog.h"
+#include "progress_dialog.h"
 
 AppWindow::AppWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,6 +21,8 @@ AppWindow::AppWindow(QWidget *parent)
     this->isLoaded = false;
 
     this->ui->btClear->setDisabled(true);
+
+    this->progress_complete = 0;
 }
 
 AppWindow::~AppWindow()
@@ -31,13 +35,6 @@ void AppWindow::initializeApp()
     QString style = this->loadStyle(":/dark/window.qss");
     this->setStyleSheet(style);
     this->initComponents();
-
-
-
-
-
-    //hashList.push_back(RunCommand("certUtil", QStringList() << "-hashfile " ));
-
 }
 
 QString AppWindow::loadStyle(const QString &file)
@@ -56,14 +53,15 @@ QString AppWindow::loadStyle(const QString &file)
 
 void AppWindow::initComponents()
 {
-    //ui->acClipboard_MD5->connect(this,"click",)
-    //this->connect(this->ui->acGenerateHash, SIGNAL(triggered()), this, SLOT(actionGenerateHashes()));
-    //connect(this->ui->acGenerateHash, &QAction::triggered, this, &AppWindow::actionGenerateHashes);
+
     QObject::connect(this->ui->acGenerateHash, &QAction::triggered, this, &AppWindow::actionGenerateHashes);
     this->ui->btGenerate->setDefaultAction(this->ui->acGenerateHash);
 
     QObject::connect(this->ui->acClear, &QAction::triggered, this, &AppWindow::actionClearAll);
     this->ui->btClear->setDefaultAction(this->ui->acClear);
+
+
+    progress = new ProgressDialog(this);
 
 
     QObject::connect(this->ui->acClipboard_MD5,&QAction::triggered, this, &AppWindow::actionCopyMD5);
@@ -93,33 +91,49 @@ bool AppWindow::fileNotLoaded()
 
 void AppWindow::populateWorkers(const QString &filepath)
 {
+
+    QFileInfo info;
+    info.setFile(filepath);
+
     if(!isLoaded){
 
         hashList.push_back(new ProcessWorker("certUtil",
                                                                            QStringList() << "-hashfile" << filepath << "MD5",
                                                                            HashType::MD5));
 
+        hashList.back()->setSize(info.size());
+
         hashList.push_back(new ProcessWorker("certUtil",
                                                                            QStringList() << "-hashfile" << filepath << "SHA256",
                                                                            HashType::SHA256));
-
+        hashList.back()->setSize(info.size());
 
         hashList.push_back(new ProcessWorker("certUtil",
                                                                            QStringList() << "-hashfile" << filepath << "SHA512",
                                                                            HashType::SHA512));
+        hashList.back()->setSize(info.size());
+
     }
 }
 
 void AppWindow::runWorkers()
 {
-    for(auto& cmd : hashList){
 
-     cmd->setAutoDelete(true);
+    QThreadPool::globalInstance()->setMaxThreadCount(10);
 
-     QObject::connect(&cmd->getSignals(), &ProcessSignals::progress, this, &AppWindow::isRunnableEnd);
-     QObject::connect(&cmd->getSignals(), &ProcessSignals::result, this, &AppWindow::fetchResult);
-     QThreadPool::globalInstance()->start(cmd);
+
+    for(auto& h : hashList){
+        QObject::connect(&h->getSignals(), &ProcessSignals::progress, this, &AppWindow::isRunnableEnd);
+        QObject::connect(&h->getSignals(), &ProcessSignals::result, this, &AppWindow::fetchResult);
+        QThreadPool::globalInstance()->start(h);
     }
+
+    if(!isLoaded){
+        progress->exec();
+    }
+
+
+
 
 }
 
@@ -149,10 +163,7 @@ void AppWindow::actionGenerateHashes()
 #endif
 
     this->ui->fieldFile->setPlainText(info.fileName());
-
     this->ui->btClear->setDisabled(false);
-
-
     this->populateWorkers(this->filepath);
 
     this->ui->btGenerate->setDefaultAction(this->ui->acRegenerate);
@@ -235,12 +246,23 @@ void AppWindow::actionReloadhashes()
 void AppWindow::isRunnableEnd(int i)
 {
     qDebug() << i << "\n";
+
+
+    float percent = 0.001f;
+    progress_complete += 1;
+
+    percent = (progress_complete / this->hashList.size()) * 100;
+    this->progress->getProgressbar()->setValue((int)percent);
+
+    if((int)percent > 99){
+        this->progress->getProgressbar()->setValue(0);
+        this->progress->close();
+    }
+
 }
 
 void AppWindow::fetchResult(const int type, const QStringList list)
 {
-    (void) type;
-
     switch(type){
         case 0: //md5
         this->ui->fieldMd5->setPlainText(parseText(list));

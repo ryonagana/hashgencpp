@@ -1,6 +1,7 @@
 #include "worker.h"
 #include <QDebug>
 
+
 ProcessWorker::ProcessWorker() : QRunnable()
 {
     arglist.clear();
@@ -15,9 +16,19 @@ ProcessWorker::ProcessWorker(const QString &command, const QStringList &args, Ha
     this->type = type;
 
 
+    this->setAutoDelete(true);
+
+
 
 
 }
+
+ProcessSignals::ProcessSignals() : QObject()
+{
+
+}
+
+
 
 void ProcessWorker::run()
 {
@@ -26,18 +37,35 @@ void ProcessWorker::run()
     proc.setArguments(this->arglist);
     proc.start();
 
-    proc.waitForFinished();
 
-    output = proc.readAllStandardOutput();
+
+
+
+    if(!proc.waitForFinished(60000)){
+        qDebug() << proc.errorString();
+        proc.kill();
+        proc.waitForFinished(1);
+
+        emit this->sig.progress(1);
+        emit this->sig.result(this->type, QStringList() << "hash generation Timed Out");
+        return;
+    }
+
+
+    QString output = proc.readAllStandardOutput();
 
 
 
     emit this->sig.progress(1);
     emit this->sig.result(this->type, output.split("\r\n"));
 
-    proc.closeWriteChannel();
+    qDebug() << output;
+
+    proc.kill();
+    proc.waitForFinished(1);
 
 
 
 }
+
 

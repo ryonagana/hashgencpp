@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include "worker.h"
 
+class ProgressDialog;
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class AppWindow; }
 QT_END_NAMESPACE
@@ -48,5 +50,7 @@ private:
     bool isLoaded;
     QString filepath;
     QVector<ProcessWorker*> hashList;
+    ProgressDialog *progress;
+    int progress_complete;
 };
 #endif // APPWINDOW_H
