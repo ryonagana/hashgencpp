@@ -75,6 +75,8 @@ void AppWindow::initComponents()
     this->ui->btClipboardSHA256->setDefaultAction(this->ui->acClipboard_SHA256);
     this->ui->btClipboardSHA512->setDefaultAction(this->ui->acClipboard_SHA512);
 
+    QObject::connect(this->ui->acQuit, &QAction::triggered, this, &AppWindow::closeApp);
+
 
     this->disableFields(true);
 }
@@ -89,9 +91,9 @@ bool AppWindow::fileNotLoaded()
    return true;
 }
 
-void AppWindow::populateWorkers(const QString &filepath)
-{
 
+void AppWindow::populateWorkersOnWindows(const QString &filepath)
+{
     QFileInfo info;
     info.setFile(filepath);
 
@@ -114,6 +116,31 @@ void AppWindow::populateWorkers(const QString &filepath)
         hashList.back()->setSize(info.size());
 
     }
+    return;
+}
+
+void AppWindow::populateWorkersOnLinux(const QString &filepath)
+{
+    QFileInfo info;
+    info.setFile(filepath);
+
+    if(!isLoaded){
+        hashList.push_back(new ProcessWorker("md5sum", QStringList() << "-b" << filepath, HashType::MD5));
+        hashList.push_back(new ProcessWorker("sha256sum", QStringList() << "-b" << filepath,HashType::SHA256));
+        hashList.push_back(new ProcessWorker("sha512sum", QStringList() << "-b" << filepath, HashType::SHA512));
+    }
+
+    return;
+}
+
+void AppWindow::populateWorkers(const QString &filepath)
+{
+#if defined(Q_OS_WINDOWS)
+    populateWorkersOnWindows(filepath);
+#elif defined(Q_OS_LINUX)
+    populateWorkersOnLinux(filepath);
+#endif
+
 }
 
 void AppWindow::runWorkers()
@@ -154,7 +181,7 @@ void AppWindow::actionGenerateHashes()
     this->filepath = path[0];
 
     info.setFile(this->filepath);
-#if Q_OS_LINUX
+#if defined(Q_OS_LINUX)
     if(info.isSymLink()){
         QMessageBox::critical(this, "Error", "Symlink is not Allowed!", QMessageBox::StandardButton::Ok);
         this->actionClearAll();
@@ -280,6 +307,11 @@ void AppWindow::fetchResult(const int type, const QStringList list)
     return;
 }
 
+void AppWindow::closeApp()
+{
+    this->close();
+}
+
 void AppWindow::openAboutDialog()
 {
     AboutDialog about;
@@ -294,8 +326,12 @@ QString AppWindow::parseText(const QStringList &list)
     res = list[1];
     res.replace(" ","");
     return res;
+#elif defined(Q_OS_LINUX)
+    res = list[0];
+    QStringList str_sep = res.split(" ");
+    return str_sep[0];
 #else
-    return QString::empty();
+    return "<Not Defined>";
 #endif
 }
 
@@ -316,4 +352,6 @@ void AppWindow::disableFields(bool _val)
     this->ui->fieldSHA512->setEnabled(_val);
     return;
 }
+
+
 

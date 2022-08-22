@@ -28,6 +28,10 @@ public:
 
     void disableFields(bool _val);
 
+
+    void populateWorkersOnWindows(const QString &filepath);
+    void populateWorkersOnLinux(const QString &filepath);
+
 public slots:
     void actionGenerateHashes();
     void actionClearAll();
@@ -40,6 +44,7 @@ public slots:
 
     void fetchResult(const int type,  const QStringList list);
 
+    void closeApp();
 
     void openAboutDialog();
 
