@@ -21,7 +21,7 @@ Dependencies:
 - [ ] Fix Ugly Template
 - [ ] Save a HashFile 
 - [ ] Add a Shell Context a.k.a Mouse Right Button (Windows Only)
-- [ ] Add Linux Support (generate Hashes)
+- [x] Add Linux Support (generate Hashes)
 - [ ] Add MacOS Support (i'm poor)
 - [x] Add Copy Hash to Clipboard Button
 - [ ] Add Program argv params
