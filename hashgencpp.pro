@@ -14,6 +14,7 @@ TARGET = hashgen
 INCLUDEPATH += include/
 
 SOURCES += \
+    src/bin_check.cpp \
     src/main.cpp \
     src/appwindow.cpp \
     src/aboutdialog.cpp \
@@ -23,6 +24,7 @@ SOURCES += \
 HEADERS += \
     include/appwindow.h \
     include/aboutdialog.h \
+    include/bin_check.h \
     include/progress_dialog.h \
     include/worker.h
 

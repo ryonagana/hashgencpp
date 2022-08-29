@@ -32,6 +32,8 @@ public:
     void populateWorkersOnWindows(const QString &filepath);
     void populateWorkersOnLinux(const QString &filepath);
 
+    int getError_counter() const;
+
 public slots:
     void actionGenerateHashes();
     void actionClearAll();
@@ -57,5 +59,7 @@ private:
     QVector<ProcessWorker*> hashList;
     ProgressDialog *progress;
     int progress_complete;
+
+    int error_counter;
 };
 #endif // APPWINDOW_H

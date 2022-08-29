@@ -11,14 +11,33 @@
 
 #include "aboutdialog.h"
 #include "progress_dialog.h"
+#include "bin_check.h"
 
 AppWindow::AppWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::AppWindow)
 {
+#if defined(Q_OS_LINUX)
+    QStringList missing_files = BinaryCheck::checkFilesOn_Linux();
+    if(missing_files.size() > 0){
+        QMessageBox::critical(this, "Error Missing File", "Some Files are Missing:\n\n" + missing_files.join("") + "\n\n Please Install the missing packages");
+    }
+    this->error_counter = missing_files.count();
+
+#elif defined(Q_OS_WINDOWS)
+    QStringList missing_files = BinaryCheck::checkFilesOn_Win32();
+    if(missing_files.size() > 0){
+        QMessageBox::critical(this, "Error Missing File", "Some Files are Missing:\n\n" + missing_files.join("") + "\n\nPlease Use minimum Windows 7 SP3");
+    }
+    this->error_counter = missing_files.count();
+#endif
+
+
     ui->setupUi(this);
     this->initializeApp();
     this->isLoaded = false;
+
+
 
     this->ui->btClear->setDisabled(true);
 
@@ -318,11 +337,16 @@ void AppWindow::openAboutDialog()
     about.exec();
 }
 
+int AppWindow::getError_counter() const
+{
+    return error_counter;
+}
+
 QString AppWindow::parseText(const QStringList &list)
 {
     QString res;
 
-#ifdef Q_OS_WINDOWS
+#ifdef defined(Q_OS_WINDOWS)
     res = list[1];
     res.replace(" ","");
     return res;
