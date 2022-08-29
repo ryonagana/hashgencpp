@@ -15,6 +15,7 @@ INCLUDEPATH += include/
 
 SOURCES += \
     src/bin_check.cpp \
+    src/hashgen_ini.cpp \
     src/main.cpp \
     src/appwindow.cpp \
     src/aboutdialog.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     include/appwindow.h \
     include/aboutdialog.h \
     include/bin_check.h \
+    include/hashgen_ini.h \
     include/progress_dialog.h \
     include/worker.h
 

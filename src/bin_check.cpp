@@ -6,7 +6,7 @@ bool BinaryCheck::checkFileExistsOn_Linux(const QString name)
     QStringList file_path = system_path.split(":");
 
 
-    for(const auto &p : file_path){
+    for(const auto &p : qAsConst(file_path)){
         QStringList absolute_path;
         absolute_path << p << "/" << name;
         QFileInfo info(absolute_path.join(""));

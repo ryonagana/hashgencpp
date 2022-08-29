@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "worker.h"
+#include "hashgen_ini.h"
 
 class ProgressDialog;
 
@@ -25,7 +26,6 @@ public:
     void populateWorkers(const QString& filepath);
     void runWorkers();
     QString parseText(const QStringList& list);
-
     void disableFields(bool _val);
 
 
@@ -33,6 +33,8 @@ public:
     void populateWorkersOnLinux(const QString &filepath);
 
     int getError_counter() const;
+
+    void processArgs();
 
 public slots:
     void actionGenerateHashes();
@@ -59,6 +61,7 @@ private:
     QVector<ProcessWorker*> hashList;
     ProgressDialog *progress;
     int progress_complete;
+    HashgenIniConfig config;
 
     int error_counter;
 };

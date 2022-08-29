@@ -24,7 +24,8 @@ Dependencies:
 - [x] Add Linux Support (generate Hashes)
 - [ ] Add MacOS Support (i'm poor)
 - [x] Add Copy Hash to Clipboard Button
-- [ ] Add Program argv params
+- [x] Add Program argv params
+- [x] Added INI Config for process executable paths
 
 #### Release 1.0 only if finish all TODO list above
 

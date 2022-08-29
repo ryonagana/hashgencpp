@@ -13,10 +13,16 @@
 #include "progress_dialog.h"
 #include "bin_check.h"
 
+
 AppWindow::AppWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::AppWindow)
 {
+
+    this->config.loadFile("config.ini");
+
+
+
 #if defined(Q_OS_LINUX)
     QStringList missing_files = BinaryCheck::checkFilesOn_Linux();
     if(missing_files.size() > 0){
@@ -38,16 +44,46 @@ AppWindow::AppWindow(QWidget *parent)
     this->isLoaded = false;
 
 
+    this->processArgs();
+
 
     this->ui->btClear->setDisabled(true);
 
     this->progress_complete = 0;
+
+
+
 }
 
 AppWindow::~AppWindow()
 {
     delete ui;
 }
+
+
+void AppWindow::processArgs()
+{
+   QStringList args = QApplication::arguments();
+   QFileInfo info;
+
+   if(args.count() < 2) return;
+
+   this->filepath = args[1];
+
+   info.setFile(this->filepath);
+
+
+   this->ui->fieldFile->setPlainText(info.fileName());
+   this->ui->btClear->setDisabled(false);
+   this->populateWorkers(this->filepath);
+
+   this->ui->btGenerate->setDefaultAction(this->ui->acRegenerate);
+   this->runWorkers();
+   this->isLoaded = true;
+   this->disableFields(false);
+
+}
+
 
 void AppWindow::initializeApp()
 {
@@ -342,15 +378,17 @@ int AppWindow::getError_counter() const
     return error_counter;
 }
 
+
+
 QString AppWindow::parseText(const QStringList &list)
 {
     QString res;
 
-#ifdef defined(Q_OS_WINDOWS)
+#ifdef Q_OS_WINDOWS
     res = list[1];
     res.replace(" ","");
     return res;
-#elif defined(Q_OS_LINUX)
+#elif Q_OS_LINUX
     res = list[0];
     QStringList str_sep = res.split(" ");
     return str_sep[0];
