@@ -66,7 +66,7 @@ bool BinaryCheck::checkFileExistsOn_Win32(const QString name)
 QStringList BinaryCheck::checkFilesOn_Win32()
 {
     QStringList missing;
-    if(!checkFileExistsOn_Win32("certUtil")){
+    if(!checkFileExistsOn_Win32("certUtil.exe")){
         missing << "certUtil";
     }
 
