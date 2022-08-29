@@ -12,7 +12,7 @@ public:
 
 
     void getWindirPath(QSettings &settings, const QString &file);
-    void getLinuxPath(QSettings *settings, const QString &keyname, const QString &file);
+    void getLinuxPath(QSettings &settings, const QString &keyname, const QString &file);
 private:
     QSettings settings;
     QString filepath;
