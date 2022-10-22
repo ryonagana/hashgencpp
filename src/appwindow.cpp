@@ -133,6 +133,10 @@ void AppWindow::initComponents()
     QObject::connect(this->ui->acQuit, &QAction::triggered, this, &AppWindow::closeApp);
 
 
+    this->ui->checkMD5->setChecked(true);
+    this->ui->checkSHA256->setChecked(true);
+    this->ui->checkSHA512->setChecked(true);
+
     this->disableFields(true);
 }
 
@@ -388,7 +392,7 @@ QString AppWindow::parseText(const QStringList &list)
     res = list[1];
     res.replace(" ","");
     return res;
-#elif Q_OS_LINUX
+#elif defined(Q_OS_LINUX)
     res = list[0];
     QStringList str_sep = res.split(" ");
     return str_sep[0];

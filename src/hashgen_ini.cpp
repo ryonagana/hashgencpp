@@ -31,27 +31,14 @@ void HashgenIniConfig::defaultConfig()
 
 #ifdef Q_OS_WIN
     getWindirPath(tmp, "certutil.exe");
-#elif Q_OS_LINUX
+#elif defined(Q_OS_LINUX)
     getLinuxPath(tmp, "md5sum_path", "md5sum");
     getLinuxPath(tmp, "sha256sum_path", "sha256sum");
     getLinuxPath(tmp, "sha512sum_path", "sha512sum");
 #endif
    tmp.endGroup();
-
-
-   qDebug() << tmp.allKeys();
-
-   for(const auto &key : tmp.allKeys()){
-
-       qDebug() << tmp.value(key);
-
-   }
-
-
    tmp.sync();
-
-
-    return;
+   return;
 }
 
 void HashgenIniConfig::getWindirPath(QSettings& settings, const QString &file)

@@ -1,7 +1,7 @@
 #include "appwindow.h"
 
 #include <QApplication>
-#include "bin_check.h"
+
 
 int main(int argc, char *argv[])
 {

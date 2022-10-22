@@ -2,21 +2,43 @@ QMainWindow {
     background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 128, 255, 32), stop:1 rgba(0, 0, 0, 0) );
     border-radius: 20px;
     color: #000000;
+
+
+
 }
 
-QLabel#labelMD5 {
+QCheckBox#checkMD5 {
     color: #FFFFFF;
     border: 0;
     font-size: 13px;
 }
 
-QLabel#labelSHA256 {
+QCheckBox#checkMD5::indicator {
+    color: #00FF00;
+
+
+}
+
+QCheckBox:checked, #checkMD5::indicator:checked {
+    color: #00FF00;
+
+
+}
+
+QCheckBox::indicator:checked {
+    background: #00FF00;
+}
+
+
+
+
+QCheckBox#checkSHA256 {
     color: #FFFFFF;
     border: 0;
     font-size: 13px;
 }
 
-QLabel#labelSHA512 {
+QCheckBox#checkSHA512 {
     color: #FFFFFF;
     border: 0;
     font-size: 13px;
@@ -48,25 +70,30 @@ QGroupBox {
 
 QToolButton#btGenerate {
     border-radius: 3px;
-    background: #95a5a6;
+    background: #FFD700;
+    color: #2c3e50;
 }
 
 QToolButton#btClear {
     border-radius: 3px;
     background: #95a5a6;
+    color: #2c3e50;
 }
 
 QToolButton#btClipboardMD5 {
     border-radius: 3px;
     background: #2c3e50;
+    color:#ecf0f1;
 }
 
 QToolButton#btClipboardSHA256 {
     border-radius: 3px;
     background: #2c3e50;
+    color: #ecf0f1;
 }
 
 QToolButton#btClipboardSHA512 {
     border-radius: 3px;
     background: #2c3e50;
+    color: #ecf0f1;
 }
