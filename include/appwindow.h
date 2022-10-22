@@ -2,8 +2,8 @@
 #define APPWINDOW_H
 
 #include <QMainWindow>
-#include "worker.h"
-#include "hashgen_ini.h"
+#include "ProcessWorker.h"
+#include "HashgenIniConfig.h"
 
 class ProgressDialog;
 

@@ -10,8 +10,8 @@
 #include <QObject>
 
 #include "aboutdialog.h"
-#include "progress_dialog.h"
-#include "bin_check.h"
+#include "ProgressDialog.h"
+#include "BinaryCheck.h"
 
 
 AppWindow::AppWindow(QWidget *parent)

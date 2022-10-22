@@ -1,5 +1,5 @@
-#ifndef PROGRESS_DIALOG_H
-#define PROGRESS_DIALOG_H
+#ifndef PROGRESSDIALOG_H
+#define PROGRESSDIALOG_H
 #include <QObject>
 #include <QDialog>
 #include <QProgressBar>
@@ -17,4 +17,4 @@ private:
     QProgressBar *progressbar;
 };
 
-#endif // PROGRESS_DIALOG_H
+#endif // PROGRESSDIALOG_H

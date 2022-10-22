@@ -1,4 +1,4 @@
-#include "worker.h"
+#include "ProcessWorker.h"
 #include <QDebug>
 
 

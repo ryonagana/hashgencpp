@@ -1,5 +1,5 @@
-#ifndef HASHGEN_INI_H
-#define HASHGEN_INI_H
+#ifndef HASHGENINICONFIG_H
+#define HASHGENINICONFIG_H
 #include <QtCore>
 #include <QSettings>
 
@@ -19,4 +19,4 @@ private:
 };
 
 
-#endif // HASHGEN_INI_H
+#endif // HASHGENINICONFIG_H

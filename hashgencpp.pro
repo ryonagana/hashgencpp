@@ -14,21 +14,21 @@ TARGET = hashgen
 INCLUDEPATH += include/
 
 SOURCES += \
-    src/bin_check.cpp \
-    src/hashgen_ini.cpp \
+    src/BinaryCheck.cpp \
+    src/HashgenIniConfig.cpp \
+    src/ProcessWorker.cpp \
+    src/ProgressDialog.cpp \
     src/main.cpp \
     src/appwindow.cpp \
-    src/aboutdialog.cpp \
-    src/progress_dialog.cpp \
-    src/worker.cpp
+    src/aboutdialog.cpp
 
 HEADERS += \
+    include/BinaryCheck.h \
+    include/HashgenIniConfig.h \
+    include/ProcessWorker.h \
+    include/ProgressDialog.h \
     include/appwindow.h \
-    include/aboutdialog.h \
-    include/bin_check.h \
-    include/hashgen_ini.h \
-    include/progress_dialog.h \
-    include/worker.h
+    include/aboutdialog.h
 
 FORMS += \
     res/aboutdialog.ui \

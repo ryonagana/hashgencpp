@@ -1,5 +1,5 @@
-#ifndef WORKER_H
-#define WORKER_H
+#ifndef PROCESSWORKER_H
+#define PROCESSWORKER_H
 
 #include <QtCore>
 #include <QRunnable>
@@ -56,4 +56,4 @@ private:
 
 
 
-#endif // WORKER_H
+#endif // PROCESSWORKER_H

@@ -1,4 +1,4 @@
-#include "bin_check.h"
+#include "BinaryCheck.h"
 
 bool BinaryCheck::checkFileExistsOn_Linux(const QString name)
 {

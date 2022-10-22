@@ -1,4 +1,4 @@
-#include "hashgen_ini.h"
+#include "HashgenIniConfig.h"
 
 HashgenIniConfig::HashgenIniConfig(const QString &filepath)
 {

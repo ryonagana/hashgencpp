@@ -1,4 +1,4 @@
-#include "progress_dialog.h"
+#include "ProgressDialog.h"
 #include <QLabel>
 
 ProgressDialog::ProgressDialog(QWidget *parent) : QDialog(parent)
