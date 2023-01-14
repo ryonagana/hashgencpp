@@ -16,10 +16,10 @@
 
 AppWindow::AppWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::AppWindow)
+    , m_ui(new Ui::AppWindow)
 {
 
-    this->config.loadFile("config.ini");
+    this->m_config.loadFile("config.ini");
 
 
 
@@ -35,21 +35,16 @@ AppWindow::AppWindow(QWidget *parent)
     if(missing_files.size() > 0){
         QMessageBox::critical(this, "Error Missing File", "Some Files are Missing:\n\n" + missing_files.join("") + "\n\nPlease Use minimum Windows 7 SP3");
     }
-    this->error_counter = missing_files.count();
+    this->m_error_counter = missing_files.count();
 #endif
 
 
-    ui->setupUi(this);
+    m_ui->setupUi(this);
     this->initializeApp();
-    this->isLoaded = false;
-
-
+    this->m_isLoaded = false;
     this->processArgs();
-
-
-    this->ui->btClear->setDisabled(true);
-
-    this->progress_complete = 0;
+    this->m_ui->btClear->setDisabled(true);
+    this->m_progress_complete = 0;
 
 
 
@@ -57,7 +52,7 @@ AppWindow::AppWindow(QWidget *parent)
 
 AppWindow::~AppWindow()
 {
-    delete ui;
+    delete m_ui;
 }
 
 
@@ -68,18 +63,18 @@ void AppWindow::processArgs()
 
    if(args.count() < 2) return;
 
-   this->filepath = args[1];
+   this->m_filepath = args[1];
 
-   info.setFile(this->filepath);
+   info.setFile(this->m_filepath);
 
 
-   this->ui->fieldFile->setPlainText(info.fileName());
-   this->ui->btClear->setDisabled(false);
-   this->populateWorkers(this->filepath);
+   this->m_ui->fieldFile->setPlainText(info.fileName());
+   this->m_ui->btClear->setDisabled(false);
+   this->populateWorkers(this->m_filepath);
 
-   this->ui->btGenerate->setDefaultAction(this->ui->acRegenerate);
+   this->m_ui->btGenerate->setDefaultAction(this->m_ui->acRegenerate);
    this->runWorkers();
-   this->isLoaded = true;
+   this->m_isLoaded = true;
    this->disableFields(false);
 
 }
@@ -90,6 +85,9 @@ void AppWindow::initializeApp()
     QString style = this->loadStyle(":/dark/window.qss");
     this->setStyleSheet(style);
     this->initComponents();
+    m_dirty = false;
+    this->m_ui->acSave->setDisabled(!this->m_dirty);
+    this->m_ui->acSaveAs->setDisabled(!this->m_dirty);
 }
 
 QString AppWindow::loadStyle(const QString &file)
@@ -109,40 +107,43 @@ QString AppWindow::loadStyle(const QString &file)
 void AppWindow::initComponents()
 {
 
-    QObject::connect(this->ui->acGenerateHash, &QAction::triggered, this, &AppWindow::actionGenerateHashes);
-    this->ui->btGenerate->setDefaultAction(this->ui->acGenerateHash);
+    QObject::connect(this->m_ui->acGenerateHash, &QAction::triggered, this, &AppWindow::actionGenerateHashes);
+    this->m_ui->btGenerate->setDefaultAction(this->m_ui->acGenerateHash);
 
-    QObject::connect(this->ui->acClear, &QAction::triggered, this, &AppWindow::actionClearAll);
-    this->ui->btClear->setDefaultAction(this->ui->acClear);
-
-
-    progress = new ProgressDialog(this);
+    QObject::connect(this->m_ui->acClear, &QAction::triggered, this, &AppWindow::actionClearAll);
+    this->m_ui->btClear->setDefaultAction(this->m_ui->acClear);
 
 
-    QObject::connect(this->ui->acClipboard_MD5,&QAction::triggered, this, &AppWindow::actionCopyMD5);
-    QObject::connect(this->ui->acClipboard_SHA256,&QAction::triggered, this, &AppWindow::actionCopySHA256);
-    QObject::connect(this->ui->acClipboard_SHA512,&QAction::triggered, this, &AppWindow::actionCopySHA512);
-    QObject::connect(this->ui->acRegenerate, &QAction::triggered, this, &AppWindow::actionReloadhashes);
-
-    QObject::connect(this->ui->actionAbout, &QAction::triggered, this, &AppWindow::openAboutDialog);
-
-    this->ui->btClipboardMD5->setDefaultAction(this->ui->acClipboard_MD5);
-    this->ui->btClipboardSHA256->setDefaultAction(this->ui->acClipboard_SHA256);
-    this->ui->btClipboardSHA512->setDefaultAction(this->ui->acClipboard_SHA512);
-
-    QObject::connect(this->ui->acQuit, &QAction::triggered, this, &AppWindow::closeApp);
+    m_progress = new ProgressDialog(this);
 
 
-    this->ui->checkMD5->setChecked(true);
-    this->ui->checkSHA256->setChecked(true);
-    this->ui->checkSHA512->setChecked(true);
+    QObject::connect(this->m_ui->acClipboard_MD5,&QAction::triggered, this, &AppWindow::actionCopyMD5);
+    QObject::connect(this->m_ui->acClipboard_SHA256,&QAction::triggered, this, &AppWindow::actionCopySHA256);
+    QObject::connect(this->m_ui->acClipboard_SHA512,&QAction::triggered, this, &AppWindow::actionCopySHA512);
+    QObject::connect(this->m_ui->acRegenerate, &QAction::triggered, this, &AppWindow::actionReloadhashes);
+    QObject::connect(this->m_ui->actionAbout, &QAction::triggered, this, &AppWindow::openAboutDialog);
+    QObject::connect(this->m_ui->acSaveAs, &QAction::triggered, this, &AppWindow::actionSaveAs);
+    QObject::connect(this->m_ui->acSave, &QAction::triggered, this, &AppWindow::actionSave);
+    QObject::connect(this->m_ui->actionChecksumFromFile, &QAction::triggered, this, &AppWindow::actionLoadHashFile);
+
+    this->m_ui->btClipboardMD5->setDefaultAction(this->m_ui->acClipboard_MD5);
+    this->m_ui->btClipboardSHA256->setDefaultAction(this->m_ui->acClipboard_SHA256);
+    this->m_ui->btClipboardSHA512->setDefaultAction(this->m_ui->acClipboard_SHA512);
+    this->m_ui->btChecksum->setDefaultAction(this->m_ui->actionChecksumFromFile);
+
+    QObject::connect(this->m_ui->acQuit, &QAction::triggered, this, &AppWindow::closeApp);
+
+
+    this->m_ui->checkMD5->setChecked(true);
+    this->m_ui->checkSHA256->setChecked(true);
+    this->m_ui->checkSHA512->setChecked(true);
 
     this->disableFields(true);
 }
 
 bool AppWindow::fileNotLoaded()
 {
-   if(!this->isLoaded){
+   if(!this->m_isLoaded){
        QMessageBox::critical(this, "Error", "Please load a file before copy", QMessageBox::StandardButton::Ok);
        return false;
    }
@@ -156,23 +157,23 @@ void AppWindow::populateWorkersOnWindows(const QString &filepath)
     QFileInfo info;
     info.setFile(filepath);
 
-    if(!isLoaded){
+    if(!m_isLoaded){
 
-        hashList.push_back(new ProcessWorker("certUtil",
+        m_hashList.push_back(new ProcessWorker("certUtil",
                                                                            QStringList() << "-hashfile" << filepath << "MD5",
                                                                            HashType::MD5));
 
-        hashList.back()->setSize(info.size());
+        m_hashList.back()->setSize(info.size());
 
-        hashList.push_back(new ProcessWorker("certUtil",
+        m_hashList.push_back(new ProcessWorker("certUtil",
                                                                            QStringList() << "-hashfile" << filepath << "SHA256",
                                                                            HashType::SHA256));
-        hashList.back()->setSize(info.size());
+        m_hashList.back()->setSize(info.size());
 
-        hashList.push_back(new ProcessWorker("certUtil",
+        m_hashList.push_back(new ProcessWorker("certUtil",
                                                                            QStringList() << "-hashfile" << filepath << "SHA512",
                                                                            HashType::SHA512));
-        hashList.back()->setSize(info.size());
+        m_hashList.back()->setSize(info.size());
 
     }
     return;
@@ -183,10 +184,10 @@ void AppWindow::populateWorkersOnLinux(const QString &filepath)
     QFileInfo info;
     info.setFile(filepath);
 
-    if(!isLoaded){
-        hashList.push_back(new ProcessWorker("md5sum", QStringList() << "-b" << filepath, HashType::MD5));
-        hashList.push_back(new ProcessWorker("sha256sum", QStringList() << "-b" << filepath,HashType::SHA256));
-        hashList.push_back(new ProcessWorker("sha512sum", QStringList() << "-b" << filepath, HashType::SHA512));
+    if(!m_isLoaded){
+        m_hashList.push_back(new ProcessWorker("md5sum", QStringList() << "-b" << filepath, HashType::MD5));
+        m_hashList.push_back(new ProcessWorker("sha256sum", QStringList() << "-b" << filepath,HashType::SHA256));
+        m_hashList.push_back(new ProcessWorker("sha512sum", QStringList() << "-b" << filepath, HashType::SHA512));
     }
 
     return;
@@ -208,14 +209,14 @@ void AppWindow::runWorkers()
     QThreadPool::globalInstance()->setMaxThreadCount(10);
 
 
-    for(auto& h : hashList){
+    for(auto& h : m_hashList){
         QObject::connect(&h->getSignals(), &ProcessSignals::progress, this, &AppWindow::isRunnableEnd);
         QObject::connect(&h->getSignals(), &ProcessSignals::result, this, &AppWindow::fetchResult);
         QThreadPool::globalInstance()->start(h);
     }
 
-    if(!isLoaded){
-        progress->exec();
+    if(!m_isLoaded){
+        m_progress->exec();
     }
 
 
@@ -235,11 +236,14 @@ void AppWindow::actionGenerateHashes()
     if(!dialog.exec()){
         return;
     }
+    QStringList file_selected = dialog.selectedFiles();
+    this->doGenerateHash(file_selected[0]);
 
+    /*
     path = dialog.selectedFiles();
-    this->filepath = path[0];
+    this->m_filepath = path[0];
 
-    info.setFile(this->filepath);
+    info.setFile(this->m_filepath);
 #if defined(Q_OS_LINUX)
     if(info.isSymLink()){
         QMessageBox::critical(this, "Error", "Symlink is not Allowed!", QMessageBox::StandardButton::Ok);
@@ -248,14 +252,18 @@ void AppWindow::actionGenerateHashes()
     }
 #endif
 
-    this->ui->fieldFile->setPlainText(info.fileName());
-    this->ui->btClear->setDisabled(false);
-    this->populateWorkers(this->filepath);
+    this->m_ui->fieldFile->setPlainText(info.fileName());
+    this->m_ui->btClear->setDisabled(false);
+    this->populateWorkers(this->m_filepath);
 
-    this->ui->btGenerate->setDefaultAction(this->ui->acRegenerate);
+    this->m_ui->btGenerate->setDefaultAction(this->m_ui->acRegenerate);
     this->runWorkers();
-    this->isLoaded = true;
+    this->m_isLoaded = true;
+    this->m_dirty = true;
     this->disableFields(false);
+
+    this->updateWindowStatus();
+    */
 
 }
 
@@ -266,18 +274,18 @@ void AppWindow::actionClearAll()
     }
 
 
-    this->isLoaded = false;
-    this->ui->fieldMd5->clear();
-    this->ui->fieldSHA256->clear();
-    this->ui->fieldSHA512->clear();
-    this->ui->fieldFile->clear();
-    this->ui->btClear->setDisabled(true);
-    this->ui->btGenerate->setDefaultAction(this->ui->acGenerateHash);
+    this->m_isLoaded = false;
+    this->m_ui->fieldMd5->clear();
+    this->m_ui->fieldSHA256->clear();
+    this->m_ui->fieldSHA512->clear();
+    this->m_ui->fieldFile->clear();
+    this->m_ui->btClear->setDisabled(true);
+    this->m_ui->btGenerate->setDefaultAction(this->m_ui->acGenerateHash);
 
     // all  pointers is automagically deleted after threadpool runs
     // it changes  the pointer ownership to itself  when it  finishes the runnable process
     // frees automatically, no need to worries about memory leak here
-    this->hashList.clear();
+    this->m_hashList.clear();
     this->disableFields(true);
     return;
 }
@@ -287,8 +295,8 @@ void AppWindow::actionCopyMD5()
     if(!this->fileNotLoaded()) return;
 
     QClipboard *c = QApplication::clipboard();
-    c->setText(this->ui->fieldMd5->toPlainText());
-    this->ui->labelStatus->setText("Hash MD5 copied to clipboard (use CTRL + V shortcut tp paste");
+    c->setText(this->m_ui->fieldMd5->toPlainText());
+    this->m_ui->labelStatus->setText("Hash MD5 copied to clipboard (use CTRL + V shortcut tp paste");
     QTimer::singleShot(5000, this, &AppWindow::clearStatusText);
 }
 
@@ -296,8 +304,8 @@ void AppWindow::actionCopySHA256()
 {
     if(!this->fileNotLoaded()) return;
     QClipboard *c = QApplication::clipboard();
-    this->ui->labelStatus->setText("Hash SHA256 copied to clipboard (use CTRL + V shortcut tp paste");
-    c->setText(this->ui->fieldSHA256->toPlainText());
+    this->m_ui->labelStatus->setText("Hash SHA256 copied to clipboard (use CTRL + V shortcut tp paste");
+    c->setText(this->m_ui->fieldSHA256->toPlainText());
 }
 
 void AppWindow::actionCopySHA512()
@@ -305,28 +313,118 @@ void AppWindow::actionCopySHA512()
     if(!this->fileNotLoaded()) return;
 
     QClipboard *c = QApplication::clipboard();
-    this->ui->labelStatus->setText("Hash SHA512 copied to clipboard (use CTRL + V shortcut tp paste");
-    c->setText(this->ui->fieldSHA512->toPlainText());
+    this->m_ui->labelStatus->setText("Hash SHA512 copied to clipboard (use CTRL + V shortcut tp paste");
+    c->setText(this->m_ui->fieldSHA512->toPlainText());
 }
 
 void AppWindow::clearStatusText()
 {
-    this->ui->labelStatus->clear();
+    this->m_ui->labelStatus->clear();
 }
 
 void AppWindow::actionReloadhashes()
 {
-    if(!this->isLoaded) return;
+    if(!this->m_isLoaded) return;
 
-    this->hashList.clear();
-    this->populateWorkers(this->filepath);
+    this->m_hashList.clear();
+    this->populateWorkers(this->m_filepath);
     this->runWorkers();
 
-    this->ui->labelStatus->setText("Hashes Regenerated");
+    this->m_ui->labelStatus->setText("Hashes Regenerated");
     QTimer::singleShot(5000, this, &AppWindow::clearStatusText);
 
     return;
 
+}
+
+void AppWindow::actionSave()
+{
+    if(m_dirty){
+        actionSaveAs();
+    }
+
+}
+
+void AppWindow::actionSaveAs()
+{
+    if(!m_isLoaded){
+        QMessageBox::critical(this, "Error", "Please generate a hash before save", QMessageBox::StandardButton::Ok);
+        return;
+    }
+
+    QFileDialog dialog;
+
+    dialog.setAcceptMode(QFileDialog::AcceptMode::AcceptSave);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setViewMode(QFileDialog::ViewMode::List);
+
+    if(!dialog.exec()){
+        return;
+    }
+
+
+    QStringList filename = dialog.selectedFiles();
+
+
+
+    QFile fp(filename[0]);
+
+    if(!fp.open(QIODevice::WriteOnly | QIODevice::Text)){
+        QMessageBox::critical(this, "Error", "File Not Found", QMessageBox::StandardButton::Ok);
+        return;
+    }
+
+
+    QStringList hashes;
+
+    hashes << this->m_ui->fieldMd5->toPlainText();
+    hashes << "|";
+    hashes << this->m_ui->fieldSHA256->toPlainText();
+    hashes << "|";
+    hashes << this->m_ui->fieldSHA512->toPlainText();
+
+    for(int i = 0; i < hashes.length();i++){
+        QByteArray bytes;
+        bytes.append(hashes[i]);
+        fp.write(bytes, bytes.length());
+    }
+
+    fp.close();
+
+    QStringList msg;
+
+    msg << "File: " << fp.fileName() << " written with sucess";
+    updateStatusText(msg.join(" "),10000);
+
+
+}
+
+void AppWindow::actionLoadHashFile()
+{
+    QFileDialog diag;
+
+    diag.setAcceptMode(QFileDialog::AcceptMode::AcceptOpen);
+    diag.setFileMode(QFileDialog::FileMode::ExistingFile);
+    diag.setViewMode(QFileDialog::ViewMode::List);
+    diag.setNameFilter("All (*.sha256 *.sha512 *.md5)");
+
+    if(!diag.exec()){
+        return;
+    }
+    QStringList filename = diag.selectedFiles();
+
+    QFile fp(filename[0]);
+
+    if(!fp.open(QFile::OpenModeFlag::ReadOnly)){
+        updateStatusText("Error Trying to load checksum file",10000);
+        return;
+    }
+
+    QString content = fp.readAll();
+    QStringList split_file = content.split(" ");
+    this->m_ui->fieldChecksum->setPlainText(split_file[0]);
+    fp.close();
+    this->doGenerateHash(split_file[1]);
 }
 
 void AppWindow::isRunnableEnd(int i)
@@ -335,14 +433,14 @@ void AppWindow::isRunnableEnd(int i)
 
 
     float percent = 0.001f;
-    progress_complete += 1;
+    m_progress_complete += 1;
 
-    percent = (progress_complete / this->hashList.size()) * 100;
-    this->progress->getProgressbar()->setValue((int)percent);
+    percent = (m_progress_complete / this->m_hashList.size()) * 100;
+    this->m_progress->getProgressbar()->setValue((int)percent);
 
     if((int)percent > 99){
-        this->progress->getProgressbar()->setValue(0);
-        this->progress->close();
+        this->m_progress->getProgressbar()->setValue(0);
+        this->m_progress->close();
     }
 
 }
@@ -351,15 +449,15 @@ void AppWindow::fetchResult(const int type, const QStringList list)
 {
     switch(type){
         case 0: //md5
-        this->ui->fieldMd5->setPlainText(parseText(list));
+        this->m_ui->fieldMd5->setPlainText(parseText(list));
         break;
 
         case 1: //sha256
-            this->ui->fieldSHA256->setPlainText(parseText(list));
+            this->m_ui->fieldSHA256->setPlainText(parseText(list));
         break;
 
         case 2: //sha512
-            this->ui->fieldSHA512->setPlainText(parseText(list));
+            this->m_ui->fieldSHA512->setPlainText(parseText(list));
         break;
     }
 
@@ -377,9 +475,23 @@ void AppWindow::openAboutDialog()
     about.exec();
 }
 
+void AppWindow::updateWindowStatus()
+{
+    this->m_ui->acSave->setDisabled(this->m_isLoaded);
+    this->m_ui->acSaveAs->setDisabled(!this->m_dirty);
+}
+
+void AppWindow::updateStatusText(const QString message, const int delay_time)
+{
+    this->m_ui->labelStatus->setText(message);
+    QTimer::singleShot(delay_time, this, &AppWindow::clearStatusText);
+}
+
+
+
 int AppWindow::getError_counter() const
 {
-    return error_counter;
+    return m_error_counter;
 }
 
 
@@ -404,20 +516,53 @@ QString AppWindow::parseText(const QStringList &list)
 void AppWindow::disableFields(bool _val)
 {
     if(_val){
-        this->ui->fieldFile->setEnabled(!_val);
-        this->ui->fieldMd5->setEnabled(!_val);
-        this->ui->fieldSHA256->setEnabled(!_val);
-        this->ui->fieldSHA512->setEnabled(!_val);
+        this->m_ui->fieldFile->setEnabled(!_val);
+        this->m_ui->fieldMd5->setEnabled(!_val);
+        this->m_ui->fieldSHA256->setEnabled(!_val);
+        this->m_ui->fieldSHA512->setEnabled(!_val);
         return;
     }
 
 
-    this->ui->fieldFile->setEnabled(_val);
-    this->ui->fieldMd5->setEnabled(_val);
-    this->ui->fieldSHA256->setEnabled(_val);
-    this->ui->fieldSHA512->setEnabled(_val);
+    this->m_ui->fieldFile->setEnabled(_val);
+    this->m_ui->fieldMd5->setEnabled(_val);
+    this->m_ui->fieldSHA256->setEnabled(_val);
+    this->m_ui->fieldSHA512->setEnabled(_val);
     return;
 }
 
+
+void AppWindow::doGenerateHash(const QString &filename)
+{
+    QFileInfo info;
+    info.setFile(filename);
+
+    if(!info.exists()){
+        updateStatusText("File Not Found!",10000);
+        return;
+    }
+
+    this->m_filepath = filename;
+
+#if defined(Q_OS_LINUX)
+    if(info.isSymLink()){
+        QMessageBox::critical(this, "Error", "Symlink is not Allowed!", QMessageBox::StandardButton::Ok);
+        this->actionClearAll();
+        return;
+    }
+#endif
+
+    this->m_ui->fieldFile->setPlainText(info.fileName());
+    this->m_ui->btClear->setDisabled(false);
+    this->populateWorkers(this->m_filepath);
+
+    this->m_ui->btGenerate->setDefaultAction(this->m_ui->acRegenerate);
+    this->runWorkers();
+    this->m_isLoaded = true;
+    this->m_dirty = true;
+    this->disableFields(false);
+
+    this->updateWindowStatus();
+}
 
 

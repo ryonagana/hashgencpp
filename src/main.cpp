@@ -5,13 +5,13 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    AppWindow w;
+    QApplication application(argc, argv);
+    AppWindow window;
 
-    if(w.getError_counter() > 0){
+    if(window.getError_counter() > 0){
         exit(-1);
     }
 
-    w.show();
-    return a.exec();
+    window.show();
+    return application.exec();
 }

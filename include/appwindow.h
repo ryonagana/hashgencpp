@@ -37,32 +37,52 @@ public:
     void processArgs();
 
 public slots:
+
+    //actions
+    // this actions is used only when an action is triggered
     void actionGenerateHashes();
     void actionClearAll();
     void actionCopyMD5();
     void actionCopySHA256();
     void actionCopySHA512();
-    void clearStatusText();
     void actionReloadhashes();
+    void actionSave();
+    void actionSaveAs();
+
+    void actionLoadHashFile();
+
+    // main methods
+    void clearStatusText();
     void isRunnableEnd(int i);
-
     void fetchResult(const int type,  const QStringList list);
-
     void closeApp();
-
     void openAboutDialog();
+
+
+    void updateWindowStatus();
+    void updateStatusText(const QString message, const int delay_time);
+
+
+
+
+
+
 
 
 
 private:
-    Ui::AppWindow *ui;
-    bool isLoaded;
-    QString filepath;
-    QVector<ProcessWorker*> hashList;
-    ProgressDialog *progress;
-    int progress_complete;
-    HashgenIniConfig config;
+    Ui::AppWindow *m_ui;
+    bool m_isLoaded;
+    QString m_filepath;
+    QVector<ProcessWorker*> m_hashList;
+    ProgressDialog *m_progress;
+    int m_progress_complete;
+    HashgenIniConfig m_config;
 
-    int error_counter;
+    bool m_dirty;
+    int m_error_counter;
+
+
+     void doGenerateHash(const QString& filename);
 };
 #endif // APPWINDOW_H
