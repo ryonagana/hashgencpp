@@ -10,9 +10,8 @@ Tools Used:
 I created this tool because the existent tools was lame and most of them are  paid sharewares for a "free" tool offered by Microsoft, and i cannnot stand PowerShell Syntax.
 
 
-
-Dependencies:
-- Qt5+
+## QT Version:
+- Qt 6.10
 - qmake
 
 
