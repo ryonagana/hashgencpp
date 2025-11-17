@@ -1,8 +1,10 @@
-QT       += core gui
+QT       += core gui uitools
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += core widgets
 
-CONFIG += gnu++14
+DEFINES += QT_DISABLE_DEPRECATED_UP_TO=0x050F00
+
+CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -32,7 +34,7 @@ HEADERS += \
 
 FORMS += \
     res/aboutdialog.ui \
-    res/appwindow.ui
+    res/appwindow.ui \
 
 TRANSLATIONS += \
     hashgencpp_pt_BR.ts

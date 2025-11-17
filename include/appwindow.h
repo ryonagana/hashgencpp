@@ -1,6 +1,5 @@
 #ifndef APPWINDOW_H
 #define APPWINDOW_H
-
 #include <QMainWindow>
 #include "ProcessWorker.h"
 #include "HashgenIniConfig.h"
@@ -32,7 +31,7 @@ public:
     void populateWorkersOnWindows(const QString &filepath);
     void populateWorkersOnLinux(const QString &filepath);
 
-    int getError_counter() const;
+    int getErrorCounter() const;
 
     void processArgs();
 

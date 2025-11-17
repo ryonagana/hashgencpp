@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     QApplication application(argc, argv);
     AppWindow window;
 
-    if(window.getError_counter() > 0){
+    if(window.getErrorCounter() > 0){
         exit(-1);
     }
 

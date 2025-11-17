@@ -1,5 +1,4 @@
 #include "appwindow.h"
-#include "ui_appwindow.h"
 #include <QtGlobal>
 #include<QDebug>
 #include <QFileDialog>
@@ -8,15 +7,17 @@
 #include <QMessageBox>
 #include <QThreadPool>
 #include <QObject>
+#include <QtUiTools/QUiLoader>
+#include <QByteArray>
 
 #include "aboutdialog.h"
 #include "ProgressDialog.h"
 #include "BinaryCheck.h"
-
+#include "ui_appwindow.h"
 
 AppWindow::AppWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , m_ui(new Ui::AppWindow)
+    : QMainWindow(parent),
+    m_ui(new Ui::AppWindow)
 {
 
     this->m_config.loadFile("config.ini");
@@ -28,7 +29,7 @@ AppWindow::AppWindow(QWidget *parent)
     if(missing_files.size() > 0){
         QMessageBox::critical(this, "Error Missing File", "Some Files are Missing:\n\n" + missing_files.join("") + "\n\n Please Install the missing packages");
     }
-    this->error_counter = missing_files.count();
+    this->m_error_counter = missing_files.count();
 
 #elif defined(Q_OS_WINDOWS)
     QStringList missing_files = BinaryCheck::checkFilesOn_Win32();
@@ -82,8 +83,8 @@ void AppWindow::processArgs()
 
 void AppWindow::initializeApp()
 {
-    QString style = this->loadStyle(":/dark/window.qss");
-    this->setStyleSheet(style);
+    //QString style = this->loadStyle(":/dark/window.qss");
+    //this->setStyleSheet(style);
     this->initComponents();
     m_dirty = false;
     this->m_ui->acSave->setDisabled(!this->m_dirty);
@@ -132,7 +133,6 @@ void AppWindow::initComponents()
     this->m_ui->btChecksum->setDefaultAction(this->m_ui->actionChecksumFromFile);
 
     QObject::connect(this->m_ui->acQuit, &QAction::triggered, this, &AppWindow::closeApp);
-
 
     this->m_ui->checkMD5->setChecked(true);
     this->m_ui->checkSHA256->setChecked(true);
@@ -385,7 +385,7 @@ void AppWindow::actionSaveAs()
 
     for(int i = 0; i < hashes.length();i++){
         QByteArray bytes;
-        bytes.append(hashes[i]);
+        bytes.append(hashes[i].toUtf8());
         fp.write(bytes, bytes.length());
     }
 
@@ -393,7 +393,7 @@ void AppWindow::actionSaveAs()
 
     QStringList msg;
 
-    msg << "File: " << fp.fileName() << " written with sucess";
+    msg << "File: " << fp.fileName() << " written with success";
     updateStatusText(msg.join(" "),10000);
 
 
@@ -489,7 +489,7 @@ void AppWindow::updateStatusText(const QString message, const int delay_time)
 
 
 
-int AppWindow::getError_counter() const
+int AppWindow::getErrorCounter() const
 {
     return m_error_counter;
 }
