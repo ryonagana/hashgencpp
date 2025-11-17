@@ -9,6 +9,10 @@ Tools Used:
 
 I created this tool because the existent tools was lame and most of them are  paid sharewares for a "free" tool offered by Microsoft, and i cannnot stand PowerShell Syntax.
 
+## Compiler
+- GCC 
+- C++17  (Qt 6.10 supports only C++17 or newer)
+- libstdc++
 
 ## QT Version:
 - Qt 6.10
@@ -23,7 +27,7 @@ I created this tool because the existent tools was lame and most of them are  pa
 - [x] Add Linux Support (generate Hashes)
 - [ ] Add MacOS Support (i'm poor)
 - [x] Add Copy Hash to Clipboard Button
-- [x] Add Program argv params
+- [x] Adde Program argv params
 - [x] Added INI Config for process executable paths
 
 #### Release 1.0 only if finish all TODO list above
