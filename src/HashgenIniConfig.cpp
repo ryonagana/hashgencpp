@@ -54,14 +54,14 @@ void HashgenIniConfig::getLinuxPath(QSettings &settings, const QString& keyname,
     QStringList lst = path.split(":");
     int count = 0;
 
-    for(const auto& p : qAsConst(lst)){
+    for(const auto& p : std::as_const(lst)){
         QStringList abspath = QStringList() << p << "//" << file;
         QFileInfo info(abspath.join(""));
 
         if(!info.exists()) continue;
 
-
-        settings.setValue(keyname + "_" + count, p);
+        const QString settings_value = keyname + "-" + QString::number(count);
+        settings.setValue(settings_value, p);
         count++;
     }
 }
